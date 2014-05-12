@@ -86,9 +86,10 @@ module.exports = class AppStoreClient
   @getItunesData:(callback,errorcallback,obj)->
       unless ENV_PRODUCTION then Ti.API.debug "obj=#{obj}"
 
-      cur = require("AppStoreClient").getTzOff()
+      cur = require("AppStoreClient/AppStoreClient").getTzOff()
       IOS_URL = unless obj? then "http://itunes.apple.com/search?term=tsuyoshi+hyuga&country=#{cur}&media=software&entity=software"
       else
+        obj.country ?= cur
         "http://itunes.apple.com/search?"+setParameter obj
       url = IOS_URL#"https://itunes.apple.com/search?term=tsuyoshi+hyuga&country=#{Ti.Locale.getCurrentCountry()}&media=software&entity=software"
       unless ENV_PRODUCTION then Ti.API.debug "url=#{url}"
@@ -99,17 +100,17 @@ module.exports = class AppStoreClient
           unless ENV_PRODUCTION then Ti.API.debug "getItunesData"
           json = JSON.parse @responseText
           data = json.results
-          
-          #TODO データのうち、無料のものを抽出 underscoreで
-          data = _.filter data,(obj)->
-            obj.price is 0
-          #TODO データを、アップデート日付順にソート underscoreで
-          data = _.sortBy(data, (item) ->
-            Number(item.releaseDate)
-          )
-          #TODO 自分のアプリIDは除外 bundleId
-          data = _.filter data,(obj)->
-            obj.bundleId isnt Ti.App.id
+#           
+          # #TODO データのうち、無料のものを抽出 underscoreで
+          # data = _.filter data,(obj)->
+            # obj.price is 0
+          # #TODO データを、アップデート日付順にソート underscoreで
+          # data = _.sortBy(data, (item) ->
+            # Number(item.releaseDate)
+          # )
+          # #TODO 自分のアプリIDは除外 bundleId
+          # data = _.filter data,(obj)->
+            # obj.bundleId isnt Ti.App.id
           callback data
 
         onerror: errorcallback
