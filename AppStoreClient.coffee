@@ -112,7 +112,7 @@ module.exports = class AppStoreClient
           # #TODO 自分のアプリIDは除外 bundleId
           # data = _.filter data,(obj)->
             # obj.bundleId isnt Ti.App.id
-          callback data
+          callback data,json.resultCount
 
         onerror: errorcallback
         onreadystatechange :(e)->
