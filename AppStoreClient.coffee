@@ -8,8 +8,27 @@ module.exports = class AppStoreClient
 
   # API = "http://itunes.apple.com/search?"
   API = "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/wa/wsSearch?"
+  RSS = "https://itunes.apple.com/jp/rss/topsongs/limit=300/explicit=true/xml"
   ANDROID_URL = "http://play.google.com/store/search?q=tsuyoshi+hyuga"
   URL=API#"http://coecorsproxy.appspot.com/"
+
+  ###*
+  xmlからタイトル配列を取得
+  @param  Titanium.XML.Document xml
+  @return String[]
+  ###
+  getKeywordToXML = (xml)->
+    title = ""
+    try
+      doc = xml.documentElement
+      items = doc.getElementsByTagName("item")
+      for i in [0...items.length]
+        element = items.item(i)
+        title = element.getElementsByTagName("title").item(0).textContent 
+        title
+      
+    catch error
+      null
 
   getParameter=(str) ->
     dec = decodeURIComponent
@@ -77,6 +96,38 @@ module.exports = class AppStoreClient
     if Ti.Locale.getCurrentCountry() isnt "" then return Ti.Locale.getCurrentCountry()
     date = new Date()
     COUNTRY[(date.getHours() - date.getUTCHours() + 24) % 24]
+  
+  getClientObject = (errorcallback)->
+        onerror: errorcallback
+        onreadystatechange :(e)->
+          unless ENV_PRODUCTION then Ti.API.debug "onreadystatechange "
+          
+        onsendstream:(e)->
+          unless ENV_PRODUCTION then Ti.API.debug "onsendstream "
+        ondatastream:(e)->
+          unless ENV_PRODUCTION then Ti.API.debug "ondatastream"
+        timeout: 5000 # in milliseconds
+  
+  ###*
+  get data
+  @param {function} callback
+  @param {function} errorcallback
+  @param {object} callback
+  ###
+  @getItunesRssData:(callback,errorcallback,obj)->
+
+      url = RSS
+      unless ENV_PRODUCTION then Ti.API.debug "url=#{url}"
+      client_object = getClientObject errorcallback
+      client_object.onload = ->
+        @responseXML
+        unless ENV_PRODUCTION then Ti.API.debug "テキスト:#{@responseText}"
+
+      client = Ti.Network.createHTTPClient client_object
+
+      client.open "GET", url
+
+      client.send()
   
   ###*
   get data
