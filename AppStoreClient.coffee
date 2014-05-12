@@ -6,7 +6,8 @@ String::replaceAll = (org, dest) ->
   
 module.exports = class AppStoreClient 
 
-  API = "http://itunes.apple.com/search?"
+  # API = "http://itunes.apple.com/search?"
+  API = "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/wa/wsSearch?"
   ANDROID_URL = "http://play.google.com/store/search?q=tsuyoshi+hyuga"
   URL=API#"http://coecorsproxy.appspot.com/"
 
@@ -87,10 +88,10 @@ module.exports = class AppStoreClient
       unless ENV_PRODUCTION then Ti.API.debug "obj=#{obj}"
 
       cur = require("AppStoreClient/AppStoreClient").getTzOff()
-      IOS_URL = unless obj? then "http://itunes.apple.com/search?term=tsuyoshi+hyuga&country=#{cur}&media=software&entity=software"
+      IOS_URL = unless obj? then API+"term=tsuyoshi+hyuga&country=#{cur}&media=software&entity=software"
       else
         obj.country ?= cur
-        "http://itunes.apple.com/search?"+setParameter obj
+        API+setParameter obj
       url = IOS_URL#"https://itunes.apple.com/search?term=tsuyoshi+hyuga&country=#{Ti.Locale.getCurrentCountry()}&media=software&entity=software"
       unless ENV_PRODUCTION then Ti.API.debug "url=#{url}"
       client = Ti.Network.createHTTPClient(
