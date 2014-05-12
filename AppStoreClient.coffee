@@ -18,15 +18,26 @@ module.exports = class AppStoreClient
   @return String[]
   ###
   getKeywordToXML = (xml)->
+    arr = []
+    
     title = ""
     try
       doc = xml.documentElement
-      items = doc.getElementsByTagName("item")
+      items = doc.getElementsByTagName("entry")
       for i in [0...items.length]
+        obj = {}
         element = items.item(i)
-        title = element.getElementsByTagName("title").item(0).textContent 
-        title
-      
+        obj.trackName = element.getElementsByTagName("im:name").item(0).textContent 
+        obj.artistName = element.getElementsByTagName("im:artist").item(0).textContent 
+        tmpurl = null
+        for j in [0...element.getElementsByTagName("im:image").length]
+          tmpurl = element.getElementsByTagName("im:image").item(j).textContent 
+        obj.artworkUrl100 = tmpurl
+        for j in [0...element.getElementsByTagName("link").length]
+          type = element.getElementsByTagName("link").item(j).getAttribute("type") 
+          obj.previewUrl = element.getElementsByTagName("link").item(j).getAttribute("href") if type is "audio/x-m4a"
+        arr.push obj
+      arr
     catch error
       null
 
@@ -120,8 +131,7 @@ module.exports = class AppStoreClient
       unless ENV_PRODUCTION then Ti.API.debug "url=#{url}"
       client_object = getClientObject errorcallback
       client_object.onload = ->
-        @responseXML
-        unless ENV_PRODUCTION then Ti.API.debug "テキスト:#{@responseText}"
+        callback getKeywordToXML @responseXML
 
       client = Ti.Network.createHTTPClient client_object
 
