@@ -8,7 +8,6 @@ module.exports = class AppStoreClient
 
   # API = "http://itunes.apple.com/search?"
   API = "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/wa/wsSearch?"
-  RSS = "https://itunes.apple.com/jp/rss/topsongs/limit=300/explicit=true/xml"
   ANDROID_URL = "http://play.google.com/store/search?q=tsuyoshi+hyuga"
   URL=API#"http://coecorsproxy.appspot.com/"
 
@@ -126,18 +125,18 @@ module.exports = class AppStoreClient
   @param {object} callback
   ###
   @getItunesRssData:(callback,errorcallback,obj)->
+    country = obj?.country ? require("AppStoreClient/AppStoreClient").getTzOff()
+    url = "https://itunes.apple.com/"+country.toLowerCase()+"/rss/topsongs/limit=300/explicit=true/xml"
+    unless ENV_PRODUCTION then Ti.API.debug "url=#{url}"
+    client_object = getClientObject errorcallback
+    client_object.onload = ->
+      callback getKeywordToXML @responseXML
 
-      url = RSS
-      unless ENV_PRODUCTION then Ti.API.debug "url=#{url}"
-      client_object = getClientObject errorcallback
-      client_object.onload = ->
-        callback getKeywordToXML @responseXML
+    client = Ti.Network.createHTTPClient client_object
 
-      client = Ti.Network.createHTTPClient client_object
+    client.open "GET", url
 
-      client.open "GET", url
-
-      client.send()
+    client.send()
   
   ###*
   get data
