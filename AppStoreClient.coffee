@@ -36,8 +36,8 @@ module.exports = class AppStoreClient
           type = element.getElementsByTagName("link").item(j).getAttribute("type") 
           obj.previewUrl = element.getElementsByTagName("link").item(j).getAttribute("href") if type is "audio/x-m4a"
         
-          #リンク
-          obj.trackViewUrl = element.getElementsByTagName("link").item(j).getAttribute("href") if type is "text/html" 
+        #リンク
+        obj.trackViewUrl = element.getElementsByTagName("id").item(0).textContent
           
         arr.push obj
       arr
