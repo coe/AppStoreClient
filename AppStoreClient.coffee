@@ -130,7 +130,8 @@ module.exports = class AppStoreClient
   ###
   @getItunesRssData:(callback,errorcallback,obj)->
     country = obj?.country ? require("AppStoreClient/AppStoreClient").getTzOff()
-    url = "https://itunes.apple.com/"+country.toLowerCase()+"/rss/topsongs/limit=300/explicit=true/xml"
+    limit = obj?.limit ? 200
+    url = "https://itunes.apple.com/"+country.toLowerCase()+"/rss/topsongs/limit=#{limit}/explicit=true/xml"
     unless ENV_PRODUCTION then Ti.API.debug "url=#{url}"
     client_object = getClientObject errorcallback
     client_object.onload = ->
