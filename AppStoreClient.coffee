@@ -42,7 +42,7 @@ module.exports = class AppStoreClient
         arr.push obj
       arr
     catch error
-      null
+      alert error
 
   getParameter=(str) ->
     dec = decodeURIComponent
