@@ -42,6 +42,7 @@ module.exports = class AppStoreClient
         arr.push obj
       arr
     catch error
+      #TypeError: 'null' is not an object (evaluating 'element.getElementsByTagName("im:name").item(0).textContent')
       alert error
 
   getParameter=(str) ->
