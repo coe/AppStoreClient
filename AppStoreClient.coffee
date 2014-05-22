@@ -154,9 +154,10 @@ module.exports = class AppStoreClient
     country = obj?.country ? require("AppStoreClient/AppStoreClient").getTzOff()
     limit = obj?.limit ? 200
     url = "https://itunes.apple.com/"+country.toLowerCase()+"/rss/topsongs/limit=#{limit}/explicit=true/xml"
-    unless ENV_PRODUCTION then Ti.API.debug "url=#{url}"
     
-    Titanium.Yahoo.yql 'select * from xml where url="'+url+'"', (e) ->
+    mojiretu = 'select * from xml where url="'+url+'"'
+    unless ENV_PRODUCTION then Ti.API.debug "url=#{url} moji=#{mojiretu}"
+    Ti.Yahoo.yql mojiretu, (e) ->
       if e.success and e.data?
         arr = e.data?.feed?.entry ? []
         objs = for item in arr
