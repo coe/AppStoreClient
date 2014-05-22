@@ -143,6 +143,42 @@ module.exports = class AppStoreClient
     client.open "GET", url
 
     client.send()
+    
+  ###*
+  get data
+  @param {function} callback
+  @param {function} errorcallback
+  @param {object} callback
+  ###
+  @getItunesRssDataYql:(callback,errorcallback,obj)->
+    country = obj?.country ? require("AppStoreClient/AppStoreClient").getTzOff()
+    limit = obj?.limit ? 200
+    url = "https://itunes.apple.com/"+country.toLowerCase()+"/rss/topsongs/limit=#{limit}/explicit=true/xml"
+    unless ENV_PRODUCTION then Ti.API.debug "url=#{url}"
+    
+    Titanium.Yahoo.yql 'select * from xml where url="'+url+'"', (e) ->
+      if e.success and e.data?
+        arr = e.data?.feed?.entry ? []
+        objs = for item in arr
+          obj = {}
+          obj.trackName = item.name
+          obj.artistName = item.artist?.content ? ""
+          tmpurl = null
+          tmpsizemax = 0
+          for image in item.image
+            nowsize = image.height - 0
+            if tmpsizemax < nowsize
+              tmpsizemax = nowsize
+              obj.artworkUrl100 = image.content
+          for link in item.link
+            obj.previewUrl = link.href if link.assetType is "preview"
+          
+          #購入リンク
+          obj.trackViewUrl = item.id?.content
+          obj
+        callback objs
+      else errorcallback e
+
   
   ###*
   get data
