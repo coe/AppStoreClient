@@ -193,6 +193,7 @@ module.exports = class AppStoreClient
     mojiretu = 'select * from xml where url="'+url+'"'
     unless ENV_PRODUCTION then Ti.API.debug "url=#{url} moji=#{mojiretu}"
     Ti.Yahoo.yql mojiretu, (e) ->
+      unless ENV_PRODUCTION then Ti.API.debug "じっこう"
       if e.success and e.data?
         arr = e.data?.feed?.entry ? []
         objs = for item in arr
