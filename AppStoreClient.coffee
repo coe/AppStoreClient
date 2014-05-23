@@ -45,6 +45,37 @@ module.exports = class AppStoreClient
       #TypeError: 'null' is not an object (evaluating 'element.getElementsByTagName("im:name").item(0).textContent')
       alert error
 
+  ###*
+  xmlからタイトル配列を取得
+  @param  Titanium.XML.Document xml
+  @return String[]
+  ###
+  getKeywordToXMLMobile = (xml)->
+    arr = []
+    
+    title = ""
+    doc = xml.documentElement
+    items = doc.getElementsByTagName("entry")
+    for i in [0...items.length]
+      obj = {}
+      element = items.item(i)
+      obj.trackName = element.getElementsByTagNameNS("http://itunes.apple.com/rss","name").item(0).textContent 
+      obj.artistName = element.getElementsByTagNameNS("http://itunes.apple.com/rss","artist").item(0).textContent 
+      tmpurl = null
+      for j in [0...element.getElementsByTagNameNS("http://itunes.apple.com/rss","image").length]
+        tmpurl = element.getElementsByTagNameNS("http://itunes.apple.com/rss","image").item(j).textContent 
+      obj.artworkUrl100 = tmpurl
+      for j in [0...element.getElementsByTagName("link").length]
+        type = element.getElementsByTagName("link").item(j).getAttribute("type") 
+        obj.previewUrl = element.getElementsByTagName("link").item(j).getAttribute("href") if type is "audio/x-m4a"
+      
+      #リンク
+      obj.trackViewUrl = element.getElementsByTagName("id").item(0).textContent
+        
+      arr.push obj
+    arr
+
+
   getParameter=(str) ->
     dec = decodeURIComponent
     par = {} #new Array()
@@ -136,7 +167,8 @@ module.exports = class AppStoreClient
     unless ENV_PRODUCTION then Ti.API.debug "url=#{url}"
     client_object = getClientObject errorcallback
     client_object.onload = ->
-      callback getKeywordToXML @responseXML
+      if OS_MOBILEWEB then callback getKeywordToXMLMobile @responseXML
+      else callback getKeywordToXML @responseXML
 
     client = Ti.Network.createHTTPClient client_object
 
