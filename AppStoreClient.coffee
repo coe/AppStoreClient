@@ -215,6 +215,7 @@ module.exports = class AppStoreClient
           obj
         callback objs
       else errorcallback e
+      return 
 
   
   ###*
