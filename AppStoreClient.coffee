@@ -191,7 +191,7 @@ module.exports = class AppStoreClient
     url = "https://itunes.apple.com/"+country.toLowerCase()+"/rss/topsongs/limit=#{limit}/explicit=true/xml"
     
     mojiretu = 'select * from xml where url="'+url+'"'
-    unless ENV_PRODUCTION then Ti.API.debug "url=#{url} moji=#{mojiretu}"
+    unless ENV_PRODUCTION then Ti.API.debug "url=#{url} moji=#{mojiretu} yql = #{Ti.Yahoo.yql}"
     Ti.Yahoo.yql mojiretu, (e) ->
       unless ENV_PRODUCTION then Ti.API.debug "じっこう"
       if e.success and e.data?
