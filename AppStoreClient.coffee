@@ -143,7 +143,42 @@ module.exports = class AppStoreClient
     client.open "GET", url
 
     client.send()
-    
+
+  ###*
+  get data
+  @param {function} callback
+  @param {function} errorcallback
+  @param {object} callback
+  ###
+  @getItunesDataPublicYQL:(callback,errorcallback,obj)->
+
+      url = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20xml%20where%20url%3D%22https%3A%2F%2Fitunes.apple.com%2Fjp%2Frss%2Ftopsongs%2Flimit%3D300%2Fxml%22&format=json&diagnostics=true&callback="
+      unless ENV_PRODUCTION then Ti.API.debug "url=#{url}"
+      client = Ti.Network.createHTTPClient(
+        
+        # function called when the response data is available
+        onload: (e)->#getItunesData #(e) ->
+          unless ENV_PRODUCTION then Ti.API.debug "getItunesData #{@responseText}"
+          json = JSON.parse @responseText
+          data = json.results
+
+          callback data,json.resultCount
+
+        onerror: errorcallback
+        onreadystatechange :(e)->
+          unless ENV_PRODUCTION then Ti.API.debug "onreadystatechange "
+          
+        onsendstream:(e)->
+          unless ENV_PRODUCTION then Ti.API.debug "onsendstream "
+        ondatastream:(e)->
+          unless ENV_PRODUCTION then Ti.API.debug "ondatastream"
+        timeout: 5000 # in milliseconds
+      )
+      
+      client.open "GET", url
+
+      client.send()
+
   ###*
   get data
   @param {function} callback
