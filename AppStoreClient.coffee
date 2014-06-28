@@ -4,6 +4,7 @@ get itunes data
 String::replaceAll = (org, dest) ->
   @split(org).join dest
   
+  
 module.exports = class AppStoreClient 
 
   # API = "http://itunes.apple.com/search?"
