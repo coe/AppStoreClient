@@ -1,0 +1,9 @@
+{
+    "description": "Appcelerator Cloud Services",
+    "directories": {
+        "lib": "."
+    },
+    "main": "AppStoreClient",
+    "name": "AppStoreClient",
+    "version": "2.0.0"
+}

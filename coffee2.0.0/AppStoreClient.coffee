@@ -1,9 +1,9 @@
 ###*
 get itunes data 
 ###
+ENV_PRODUCTION = no
 String::replaceAll = (org, dest) ->
   @split(org).join dest
-  
   
 module.exports = class AppStoreClient 
 
@@ -162,7 +162,7 @@ module.exports = class AppStoreClient
   @param {object} callback
   ###
   @getItunesRssData:(callback,errorcallback,obj)->
-    country = obj?.country ? require("AppStoreClient/AppStoreClient").getTzOff()
+    country = obj?.country ? require("AAppStoreClient").getTzOff()
     limit = obj?.limit ? 200
     url = "https://itunes.apple.com/"+country.toLowerCase()+"/rss/topsongs/limit=#{limit}/explicit=true/xml"
     unless ENV_PRODUCTION then Ti.API.debug "url=#{url}"
@@ -219,7 +219,7 @@ module.exports = class AppStoreClient
   @param {object} callback
   ###
   @getItunesRssDataYql:(callback,errorcallback,obj)->
-    country = obj?.country ? require("AppStoreClient/AppStoreClient").getTzOff()
+    country = obj?.country ? require("AppStoreClient").getTzOff()
     limit = obj?.limit ? 200
     url = "https://itunes.apple.com/"+country.toLowerCase()+"/rss/topsongs/limit=#{limit}/explicit=true/xml"
     
@@ -260,7 +260,7 @@ module.exports = class AppStoreClient
   @getItunesData:(callback,errorcallback,obj)->
       unless ENV_PRODUCTION then Ti.API.debug "obj=#{obj}"
 
-      cur = require("AppStoreClient/AppStoreClient").getTzOff()
+      cur = require("AppStoreClient").getTzOff()
       IOS_URL = unless obj? then API+"term=tsuyoshi+hyuga&country=#{cur}&media=software&entity=software"
       else
         obj.country ?= cur
