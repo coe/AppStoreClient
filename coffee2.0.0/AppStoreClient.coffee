@@ -2,6 +2,8 @@
 get itunes data 
 ###
 ENV_PRODUCTION = no
+
+
 String::replaceAll = (org, dest) ->
   @split(org).join dest
   
@@ -301,3 +303,33 @@ module.exports = class AppStoreClient
       client.open "GET", url
 
       client.send()
+
+  ###*
+  checkAndroid
+  @param {function(object)} callback successで判定
+  ###
+  @checkAndroid:(bundleId,callback)->
+    obj = {}
+    obj.success = off
+    android_url = "https://play.google.com/store/apps/details?id="
+    url = android_url+bundleId
+    client = Ti.Network.createHTTPClient
+      onload:(e)->
+        unless ENV_PRODUCTION then Ti.API.debug "onload #{url}"
+        obj.success = on
+        obj.client = @
+        callback obj
+      onerror:(e)->
+        unless ENV_PRODUCTION then Ti.API.debug "onerror #{url}"
+        obj.success = off
+        obj.client = @
+        callback obj
+      onreadystatechange :(e)->
+        unless ENV_PRODUCTION then Ti.API.debug "onreadystatechange #{e?.status}"
+      onsendstream:(e)->
+        unless ENV_PRODUCTION then Ti.API.debug "onsendstream #{e?.status}"
+      ondatastream:(e)->
+        unless ENV_PRODUCTION then Ti.API.debug "ondatastream #{e?.status}"
+      timeout : 5000
+    client.open "GET", url
+    client.send()

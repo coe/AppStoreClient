@@ -312,6 +312,51 @@ module.exports = AppStoreClient = (function() {
     return client.send();
   };
 
+  /**
+  checkAndroid
+  @param {function(object)} callback successで判定
+  */
+
+  AppStoreClient.checkAndroid = function(bundleId, callback) {
+    var android_url, client, obj, url;
+    obj = {};
+    obj.success = false;
+    android_url = "https://play.google.com/store/apps/details?id=";
+    url = android_url + bundleId;
+    client = Ti.Network.createHTTPClient({
+      onload: function(e) {
+        if (!ENV_PRODUCTION) Ti.API.debug("onload " + url);
+        obj.success = true;
+        obj.client = this;
+        return callback(obj);
+      },
+      onerror: function(e) {
+        if (!ENV_PRODUCTION) Ti.API.debug("onerror " + url);
+        obj.success = false;
+        obj.client = this;
+        return callback(obj);
+      },
+      onreadystatechange: function(e) {
+        if (!ENV_PRODUCTION) {
+          return Ti.API.debug("onreadystatechange " + (e != null ? e.status : void 0));
+        }
+      },
+      onsendstream: function(e) {
+        if (!ENV_PRODUCTION) {
+          return Ti.API.debug("onsendstream " + (e != null ? e.status : void 0));
+        }
+      },
+      ondatastream: function(e) {
+        if (!ENV_PRODUCTION) {
+          return Ti.API.debug("ondatastream " + (e != null ? e.status : void 0));
+        }
+      },
+      timeout: 5000
+    });
+    client.open("GET", url);
+    return client.send();
+  };
+
   return AppStoreClient;
 
 })();
